@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outdoor Ad Studio - Standalone</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        input[type="file"]::file-selector-button { display: none; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen selection:bg-indigo-500/30">
+
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                    <i data-lucide="monitor" class="w-6 h-6 text-white"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg tracking-tight">Outdoor Ad Studio</h1>
+                    <p class="text-xs text-slate-400">3072 x 1152 Recomposer</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <button id="resetBtn" class="flex items-center gap-2 px-4 py-2 rounded-full font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition-all active:scale-95">
+                    <i data-lucide="refresh-cw" class="w-4 h-4"></i> Reset
+                </button>
+                <button id="renderBtn" class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 disabled:text-slate-500 px-5 py-2 rounded-full font-semibold transition-all shadow-lg shadow-indigo-500/20 active:scale-95">
+                    <i data-lucide="play" class="w-4 h-4"></i> 1. Render & Preview
+                </button>
+                <button id="saveBtn" disabled class="flex items-center gap-2 px-5 py-2 rounded-full font-semibold transition-all bg-slate-800 text-slate-500 cursor-not-allowed shadow-none active:scale-95">
+                    <i data-lucide="download" class="w-4 h-4"></i> 2. Save to Computer
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- Left Column: Controls -->
+        <div class="lg:col-span-4 space-y-6">
+            <section class="bg-slate-900/50 border border-slate-800 rounded-3xl p-6 space-y-6">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-sm font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2">
+                        <i data-lucide="upload" class="w-4 h-4"></i> Assets Upload
+                    </h2>
+                    <div class="flex bg-slate-800 p-1 rounded-lg" id="modeSelector">
+                        <button data-mode="video-image" class="px-3 py-1 text-[10px] font-bold rounded-md transition-all bg-indigo-600 text-white">V+I</button>
+                        <button data-mode="dual-video" class="px-3 py-1 text-[10px] font-bold rounded-md transition-all text-slate-400">V+V</button>
+                    </div>
+                </div>
+
+                <!-- Upload 1 -->
+                <div class="space-y-3">
+                    <label class="block text-sm font-medium text-slate-300" id="labelV1">Video Source (1920x1080, 30s)</label>
+                    <div class="relative group border-2 border-dashed border-slate-700 hover:border-slate-600 bg-slate-800/30 rounded-2xl transition-all" id="dropV1">
+                        <input type="file" id="inputV1" accept="video/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
+                        <div class="p-6 flex flex-col items-center text-center gap-2 relative z-10" id="infoV1">
+                            <div class="w-10 h-10 bg-slate-700/50 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i data-lucide="video" class="w-5 h-5 text-slate-400"></i>
+                            </div>
+                            <span class="text-sm font-medium text-slate-400">Drop video here</span>
+                            <span class="text-[10px] text-slate-500">MP4, MOV</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload 2 (Hidden by default) -->
+                <div class="space-y-3 hidden" id="containerV2">
+                    <label class="block text-sm font-medium text-slate-300">Video 2 (15-30s)</label>
+                    <div class="relative group border-2 border-dashed border-slate-700 hover:border-slate-600 bg-slate-800/30 rounded-2xl transition-all" id="dropV2">
+                        <input type="file" id="inputV2" accept="video/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
+                        <div class="p-6 flex flex-col items-center text-center gap-2 relative z-10" id="infoV2">
+                            <div class="w-10 h-10 bg-slate-700/50 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i data-lucide="video" class="w-5 h-5 text-slate-400"></i>
+                            </div>
+                            <span class="text-sm font-medium text-slate-400">Drop video 2 here</span>
+                            <span class="text-[10px] text-slate-500">MP4, MOV</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Image Upload -->
+                <div class="space-y-3">
+                    <label class="block text-sm font-medium text-slate-300">Image Overlay (PNG, 1024x1152)</label>
+                    <div class="relative group border-2 border-dashed border-slate-700 hover:border-slate-600 bg-slate-800/30 rounded-2xl transition-all" id="dropImg">
+                        <input type="file" id="inputImg" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
+                        <div class="p-6 flex flex-col items-center text-center gap-2 relative z-10" id="infoImg">
+                            <div class="w-10 h-10 bg-slate-700/50 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i data-lucide="image" class="w-5 h-5 text-slate-400"></i>
+                            </div>
+                            <span class="text-sm font-medium text-slate-400">Drop image here</span>
+                            <span class="text-[10px] text-slate-500">PNG, JPG recommended</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filename -->
+                <div class="space-y-3 pt-2 border-t border-slate-800">
+                    <label class="block text-sm font-medium text-slate-300">Output Filename</label>
+                    <div class="relative">
+                        <input type="text" id="filenameInput" value="outdoor_ad_3072x1152" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all">
+                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-mono text-slate-500">.mp4</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings -->
+            <section class="bg-slate-900/50 border border-slate-800 rounded-3xl p-6 space-y-4">
+                <h2 class="text-sm font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2">
+                    <i data-lucide="settings" class="w-4 h-4"></i> Export Settings
+                </h2>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between p-3 bg-slate-800/50 rounded-xl border border-slate-700">
+                        <div class="flex flex-col">
+                            <span class="text-xs font-medium text-slate-300">Include Sound</span>
+                            <span class="text-[10px] text-slate-500">Capture audio from video</span>
+                        </div>
+                        <button id="soundToggle" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors bg-indigo-600">
+                            <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-6" id="soundToggleKnob"></span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Status Messages -->
+            <div id="statusArea" class="space-y-3"></div>
+        </div>
+
+        <!-- Right Column: Preview -->
+        <div class="lg:col-span-8 space-y-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-[2rem] overflow-hidden shadow-2xl">
+                <div class="p-6 border-b border-slate-800 flex items-center justify-between bg-slate-900/50">
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
+                        <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Live Preview</span>
+                    </div>
+                    <button id="playBtn" disabled class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-800 hover:bg-slate-700 text-slate-200 disabled:opacity-50 transition-colors">
+                        <i data-lucide="play" class="w-5 h-5 ml-0.5"></i>
+                    </button>
+                </div>
+
+                <div class="relative aspect-[3072/1152] bg-black group">
+                    <canvas id="mainCanvas" width="3072" height="1152" class="w-full h-full object-contain"></canvas>
+                    
+                    <!-- Overlay info -->
+                    <div class="absolute top-4 left-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                        <span class="px-2 py-1 bg-black/60 backdrop-blur-sm rounded text-[10px] font-mono text-indigo-400 border border-indigo-500/30">VIDEO: 2048x1152</span>
+                        <span class="px-2 py-1 bg-black/60 backdrop-blur-sm rounded text-[10px] font-mono text-emerald-400 border border-emerald-500/30">IMAGE: 1024x1152</span>
+                    </div>
+                </div>
+
+                <div class="p-6 bg-slate-900/80 backdrop-blur-sm">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs text-slate-500 font-medium">Timeline Progress</span>
+                        <span class="text-xs font-mono text-slate-400" id="timeDisplay">0s / 30s</span>
+                    </div>
+                    <div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                        <div id="progressBar" class="h-full bg-indigo-500 w-0 transition-all duration-100"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="p-5 bg-slate-900/30 border border-slate-800 rounded-2xl text-center">
+                    <h4 class="text-xs font-bold text-slate-400 uppercase mb-2">Resolution</h4>
+                    <p class="text-sm text-slate-300">3072 x 1152 (8:3)</p>
+                </div>
+                <div class="p-5 bg-slate-900/30 border border-slate-800 rounded-2xl text-center">
+                    <h4 class="text-xs font-bold text-slate-400 uppercase mb-2">Target Duration</h4>
+                    <p class="text-sm text-slate-300">30 Seconds</p>
+                </div>
+                <div class="p-5 bg-slate-900/30 border border-slate-800 rounded-2xl text-center">
+                    <h4 class="text-xs font-bold text-slate-400 uppercase mb-2">Compatibility</h4>
+                    <p class="text-sm text-slate-300">QuickTime & Web Optimized</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Hidden Video/Image Elements -->
+    <div class="hidden">
+        <video id="v1" crossOrigin="anonymous"></video>
+        <video id="v2" crossOrigin="anonymous"></video>
+        <img id="img" crossOrigin="anonymous">
+    </div>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // State Management
+        let state = {
+            mode: 'video-image',
+            isPlaying: false,
+            isExporting: false,
+            isSoundEnabled: true,
+            exportUrl: null,
+            exportStartTime: 0,
+            hasStartedVideo2: false,
+            video1Loaded: false,
+            video2Loaded: false,
+            imageLoaded: false,
+            chunks: []
+        };
+
+        // DOM Elements
+        const elements = {
+            canvas: document.getElementById('mainCanvas'),
+            ctx: document.getElementById('mainCanvas').getContext('2d'),
+            v1: document.getElementById('v1'),
+            v2: document.getElementById('v2'),
+            img: document.getElementById('img'),
+            renderBtn: document.getElementById('renderBtn'),
+            saveBtn: document.getElementById('saveBtn'),
+            resetBtn: document.getElementById('resetBtn'),
+            playBtn: document.getElementById('playBtn'),
+            progressBar: document.getElementById('progressBar'),
+            timeDisplay: document.getElementById('timeDisplay'),
+            modeBtns: document.querySelectorAll('#modeSelector button'),
+            inputV1: document.getElementById('inputV1'),
+            inputV2: document.getElementById('inputV2'),
+            inputImg: document.getElementById('inputImg'),
+            infoV1: document.getElementById('infoV1'),
+            infoV2: document.getElementById('infoV2'),
+            infoImg: document.getElementById('infoImg'),
+            containerV2: document.getElementById('containerV2'),
+            labelV1: document.getElementById('labelV1'),
+            soundToggle: document.getElementById('soundToggle'),
+            soundToggleKnob: document.getElementById('soundToggleKnob'),
+            statusArea: document.getElementById('statusArea'),
+            filenameInput: document.getElementById('filenameInput')
+        };
+
+        // Constants
+        const CANVAS_WIDTH = 3072;
+        const CANVAS_HEIGHT = 1152;
+        const VIDEO_WIDTH = 2048;
+        const IMAGE_WIDTH = 1024;
+        const TARGET_DURATION = 30;
+
+        // Drawing Loop
+        function draw() {
+            const { ctx, canvas, v1, v2, img } = elements;
+            ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+            let activeVideo = v1;
+            if (state.mode === 'dual-video') {
+                if (state.isExporting) {
+                    const elapsed = (performance.now() - state.exportStartTime) / 1000;
+                    activeVideo = (elapsed < 15) ? v1 : v2;
+                } else {
+                    activeVideo = (v1.currentTime >= 15 || v1.ended) ? v2 : v1;
+                }
+            }
+
+            // Draw Video
+            if (activeVideo.readyState >= 2) {
+                ctx.drawImage(activeVideo, 0, 0, VIDEO_WIDTH, CANVAS_HEIGHT);
+            } else {
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(0, 0, VIDEO_WIDTH, CANVAS_HEIGHT);
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = '48px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('Video Source (2048x1152)', VIDEO_WIDTH / 2, CANVAS_HEIGHT / 2);
+            }
+
+            // Draw Image
+            if (state.imageLoaded) {
+                ctx.drawImage(img, VIDEO_WIDTH, 0, IMAGE_WIDTH, CANVAS_HEIGHT);
+            } else {
+                ctx.fillStyle = '#334155';
+                ctx.fillRect(VIDEO_WIDTH, 0, IMAGE_WIDTH, CANVAS_HEIGHT);
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = '48px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('Image Source (1024x1152)', VIDEO_WIDTH + IMAGE_WIDTH / 2, CANVAS_HEIGHT / 2);
+            }
+
+            // Update UI Progress
+            if (state.isPlaying || state.isExporting) {
+                let current = 0;
+                if (state.mode === 'dual-video') {
+                    current = (v1.currentTime >= 15) ? 15 + v2.currentTime : v1.currentTime;
+                } else {
+                    current = v1.currentTime;
+                }
+                const progress = (current / TARGET_DURATION) * 100;
+                elements.progressBar.style.width = `${progress}%`;
+                elements.timeDisplay.innerText = `${Math.floor(current)}s / 30s`;
+            }
+
+            requestAnimationFrame(draw);
+        }
+        draw();
+
+        // Event Handlers
+        elements.modeBtns.forEach(btn => {
+            btn.onclick = () => {
+                state.mode = btn.dataset.mode;
+                elements.modeBtns.forEach(b => {
+                    b.classList.remove('bg-indigo-600', 'text-white');
+                    b.classList.add('text-slate-400');
+                });
+                btn.classList.add('bg-indigo-600', 'text-white');
+                btn.classList.remove('text-slate-400');
+
+                if (state.mode === 'dual-video') {
+                    elements.containerV2.classList.remove('hidden');
+                    elements.labelV1.innerText = 'Video 1 (0-15s)';
+                } else {
+                    elements.containerV2.classList.add('hidden');
+                    elements.labelV1.innerText = 'Video Source (1920x1080, 30s)';
+                }
+                checkReady();
+            };
+        });
+
+        elements.inputV1.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                elements.v1.src = URL.createObjectURL(file);
+                elements.infoV1.innerHTML = `<i data-lucide="check-circle-2" class="w-5 h-5 text-indigo-400"></i><span class="text-sm font-medium text-indigo-300">${file.name}</span>`;
+                lucide.createIcons();
+                state.video1Loaded = true;
+                checkReady();
+            }
+        };
+
+        elements.inputV2.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                elements.v2.src = URL.createObjectURL(file);
+                elements.infoV2.innerHTML = `<i data-lucide="check-circle-2" class="w-5 h-5 text-indigo-400"></i><span class="text-sm font-medium text-indigo-300">${file.name}</span>`;
+                lucide.createIcons();
+                state.video2Loaded = true;
+                checkReady();
+            }
+        };
+
+        elements.inputImg.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                elements.img.src = URL.createObjectURL(file);
+                elements.infoImg.innerHTML = `<i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-400"></i><span class="text-sm font-medium text-emerald-300">${file.name}</span>`;
+                lucide.createIcons();
+                state.imageLoaded = true;
+                checkReady();
+            }
+        };
+
+        elements.soundToggle.onclick = () => {
+            state.isSoundEnabled = !state.isSoundEnabled;
+            elements.soundToggle.classList.toggle('bg-indigo-600', state.isSoundEnabled);
+            elements.soundToggle.classList.toggle('bg-slate-700', !state.isSoundEnabled);
+            elements.soundToggleKnob.classList.toggle('translate-x-6', state.isSoundEnabled);
+            elements.soundToggleKnob.classList.toggle('translate-x-1', !state.isSoundEnabled);
+        };
+
+        elements.playBtn.onclick = () => {
+            if (state.isPlaying) {
+                elements.v1.pause();
+                elements.v2.pause();
+                elements.playBtn.innerHTML = '<i data-lucide="play" class="w-5 h-5 ml-0.5"></i>';
+            } else {
+                if (state.mode === 'dual-video' && elements.v1.currentTime >= 15) {
+                    elements.v2.play();
+                } else {
+                    elements.v1.play();
+                }
+                elements.playBtn.innerHTML = '<i data-lucide="pause" class="w-5 h-5"></i>';
+            }
+            state.isPlaying = !state.isPlaying;
+            lucide.createIcons();
+        };
+
+        elements.v1.ontimeupdate = () => {
+            if (state.mode === 'dual-video' && state.isPlaying && elements.v1.currentTime >= 15) {
+                elements.v1.pause();
+                elements.v2.currentTime = 0;
+                elements.v2.play();
+            }
+        };
+
+        elements.v2.onended = elements.v1.onended = () => {
+            if (!state.isExporting) {
+                state.isPlaying = false;
+                elements.playBtn.innerHTML = '<i data-lucide="play" class="w-5 h-5 ml-0.5"></i>';
+                lucide.createIcons();
+            }
+        };
+
+        function checkReady() {
+            const v1Ready = state.video1Loaded;
+            const imgReady = state.imageLoaded;
+            const v2Ready = state.mode === 'dual-video' ? state.video2Loaded : true;
+            
+            const isReady = v1Ready && imgReady && v2Ready;
+            elements.renderBtn.disabled = !isReady;
+            elements.playBtn.disabled = !v1Ready;
+        }
+
+        // Export Logic
+        elements.renderBtn.onclick = async () => {
+            try {
+                state.isExporting = true;
+                state.chunks = [];
+                elements.renderBtn.disabled = true;
+                elements.saveBtn.disabled = true;
+                elements.statusArea.innerHTML = `
+                    <div class="bg-indigo-500/20 border border-indigo-500/30 p-4 rounded-2xl flex items-start gap-3 animate-pulse">
+                        <i data-lucide="info" class="w-5 h-5 text-indigo-400"></i>
+                        <div class="space-y-1">
+                            <p class="text-sm font-bold text-indigo-200" id="renderStatus">Rendering Video 1...</p>
+                            <p class="text-xs text-indigo-300/80 leading-relaxed">탭을 활성 상태로 유지해 주세요.</p>
+                        </div>
+                    </div>`;
+                lucide.createIcons();
+
+                const stream = elements.canvas.captureStream(30);
+                
+                // Audio Setup
+                if (state.isSoundEnabled) {
+                    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    const dest = audioCtx.createMediaStreamDestination();
+                    const s1 = audioCtx.createMediaElementSource(elements.v1);
+                    s1.connect(dest);
+                    if (state.mode === 'dual-video') {
+                        const s2 = audioCtx.createMediaElementSource(elements.v2);
+                        s2.connect(dest);
+                    }
+                    stream.addTrack(dest.stream.getAudioTracks()[0]);
+                }
+
+                const mimeType = MediaRecorder.isTypeSupported('video/mp4;codecs=avc1,aac') ? 'video/mp4;codecs=avc1,aac' : 'video/webm';
+                const recorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 12000000 });
+
+                recorder.ondataavailable = (e) => { if (e.data.size > 0) state.chunks.push(e.data); };
+                recorder.onstop = () => {
+                    const blob = new Blob(state.chunks, { type: mimeType });
+                    state.exportUrl = URL.createObjectURL(blob);
+                    state.isExporting = false;
+                    elements.saveBtn.disabled = false;
+                    elements.renderBtn.disabled = false;
+                    elements.renderBtn.innerHTML = '<i data-lucide="play" class="w-4 h-4"></i> 1. Render & Preview';
+                    elements.statusArea.innerHTML = `
+                        <div class="bg-emerald-500/20 border border-emerald-500/30 p-4 rounded-2xl flex items-start gap-3">
+                            <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-400"></i>
+                            <p class="text-sm text-emerald-200">Export Complete! Save to Computer 버튼을 눌러주세요.</p>
+                        </div>`;
+                    lucide.createIcons();
+                };
+
+                // Start
+                elements.v1.pause();
+                elements.v1.currentTime = 0;
+                elements.v2.pause();
+                elements.v2.currentTime = 0;
+                
+                await elements.v1.play();
+                state.exportStartTime = performance.now();
+                recorder.start();
+
+                const interval = setInterval(() => {
+                    const elapsed = (performance.now() - state.exportStartTime) / 1000;
+                    if (elapsed >= TARGET_DURATION) {
+                        clearInterval(interval);
+                        elements.v1.pause();
+                        elements.v2.pause();
+                        recorder.stop();
+                    } else {
+                        if (state.mode === 'dual-video') {
+                            if (elapsed >= 15 && !state.hasStartedVideo2) {
+                                elements.v1.pause();
+                                elements.v2.play();
+                                state.hasStartedVideo2 = true;
+                                document.getElementById('renderStatus').innerText = 'Rendering Video 2...';
+                            }
+                        }
+                    }
+                }, 100);
+
+            } catch (err) {
+                console.error(err);
+                state.isExporting = false;
+                elements.renderBtn.disabled = false;
+                elements.statusArea.innerHTML = `<p class="text-red-500 text-sm">Error: ${err.message}</p>`;
+            }
+        };
+
+        elements.saveBtn.onclick = () => {
+            const a = document.createElement('a');
+            a.href = state.exportUrl;
+            const ext = state.chunks[0].type.includes('webm') ? '.webm' : '.mp4';
+            a.download = elements.filenameInput.value + ext;
+            a.click();
+        };
+
+        elements.resetBtn.onclick = () => {
+            location.reload(); // Simplest reset for standalone
+        };
+
+    </script>
+</body>
+</html>
