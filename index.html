@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Outdoor Ad Studio - Professional Master</title>
+    <title>Outdoor Ad Studio Pro - MP4 Master</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -11,193 +11,198 @@
         body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fafc; overflow-x: hidden; }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
         input[type="file"]::file-selector-button { display: none; }
-        .rendering-overlay { backdrop-filter: blur(12px); background: rgba(2, 6, 23, 0.85); }
-        .canvas-container { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+        .rendering-overlay { backdrop-filter: blur(16px); background: rgba(2, 6, 23, 0.9); }
+        .canvas-container { box-shadow: 0 0 80px -20px rgba(99, 102, 241, 0.3); }
+        .glass-panel { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(51, 65, 85, 0.5); backdrop-filter: blur(8px); }
     </style>
 </head>
-<body class="min-h-screen">
+<body class="min-h-screen selection:bg-indigo-500/30">
 
-    <!-- Rendering Overlay -->
+    <!-- Rendering Progress Overlay -->
     <div id="renderOverlay" class="fixed inset-0 z-[100] hidden flex flex-col items-center justify-center rendering-overlay">
-        <div class="relative mb-10">
-            <div class="w-32 h-32 border-4 border-indigo-500/10 border-t-indigo-500 rounded-full animate-spin"></div>
-            <div class="absolute inset-0 flex items-center justify-center font-bold text-2xl text-indigo-400" id="renderPercent">0%</div>
+        <div class="relative mb-12">
+            <div class="w-40 h-40 border-[6px] border-indigo-500/10 border-t-indigo-500 rounded-full animate-spin"></div>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <div class="text-3xl font-bold text-white font-mono" id="renderPercent">0%</div>
+                <div class="text-[10px] text-indigo-400 font-bold uppercase tracking-widest mt-1">Rendering</div>
+            </div>
         </div>
-        <h2 class="text-3xl font-bold mb-3 tracking-tight">Professional Rendering...</h2>
-        <p class="text-slate-400 mb-8 text-center max-w-md leading-relaxed">
-            고해상도(3K) 영상을 생성 중입니다. <br>
-            <span class="text-indigo-300 font-medium">브라우저 탭을 활성 상태로 유지해 주세요.</span><br>
-            <span class="text-xs text-slate-500 mt-2 block">(약 30초 소요됩니다)</span>
+        <h2 class="text-4xl font-bold mb-4 tracking-tight text-white">Mastering MP4 Video...</h2>
+        <p class="text-slate-400 mb-10 text-center max-w-lg leading-relaxed text-lg">
+            고해상도 3K 마스터 영상을 생성하고 있습니다. <br>
+            <span class="text-indigo-300 font-medium">브라우저 탭을 활성 상태로 유지해 주세요.</span>
         </p>
-        <div class="w-80 h-3 bg-slate-800 rounded-full overflow-hidden border border-slate-700 shadow-inner">
-            <div id="renderBar" class="h-full bg-indigo-500 w-0 transition-all duration-300 shadow-[0_0_20px_rgba(99,102,241,0.6)]"></div>
+        <div class="w-96 h-4 bg-slate-800 rounded-full overflow-hidden border border-slate-700 p-1">
+            <div id="renderBar" class="h-full bg-gradient-to-r from-indigo-600 to-indigo-400 w-0 rounded-full transition-all duration-300 shadow-[0_0_25px_rgba(99,102,241,0.8)]"></div>
         </div>
-        <p id="renderStatus" class="mt-6 text-xs font-mono text-indigo-400/70 uppercase tracking-widest">Initializing Engine...</p>
+        <div id="renderStatus" class="mt-8 text-sm font-mono text-indigo-400/80 uppercase tracking-[0.3em] animate-pulse">Initializing Rendering Engine...</div>
     </div>
 
     <!-- Header -->
-    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-4">
-                <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
-                    <i data-lucide="monitor" class="w-6 h-6 text-white"></i>
+    <header class="border-b border-slate-800/60 bg-slate-950/80 backdrop-blur-xl sticky top-0 z-50">
+        <div class="max-w-[1600px] mx-auto px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-5">
+                <div class="w-12 h-12 bg-gradient-to-br from-indigo-600 to-violet-700 rounded-2xl flex items-center justify-center shadow-2xl shadow-indigo-500/40 rotate-3">
+                    <i data-lucide="monitor" class="w-7 h-7 text-white"></i>
                 </div>
                 <div>
-                    <h1 class="font-bold text-lg tracking-tight">Outdoor Ad Studio</h1>
-                    <div class="flex items-center gap-2">
-                        <span class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">3072 x 1152 Master</span>
-                        <span class="w-1 h-1 rounded-full bg-slate-700"></span>
-                        <span class="text-[10px] text-indigo-400 font-mono">v3.0 Stable</span>
+                    <h1 class="font-extrabold text-xl tracking-tight text-white">Outdoor Ad Studio <span class="text-indigo-500">Pro</span></h1>
+                    <div class="flex items-center gap-3 mt-0.5">
+                        <span class="text-[10px] text-slate-500 uppercase tracking-[0.2em] font-black">3072 x 1152 Master Output</span>
+                        <div class="w-1 h-1 rounded-full bg-slate-700"></div>
+                        <span class="text-[10px] text-emerald-400 font-mono font-bold">MP4 Format Enabled</span>
                     </div>
                 </div>
             </div>
-            <div class="flex items-center gap-3">
-                <button id="resetBtn" class="p-2.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-full transition-all active:scale-90" title="Reset All">
+            <div class="flex items-center gap-4">
+                <button id="resetBtn" class="p-3 text-slate-400 hover:text-white hover:bg-slate-800/80 rounded-2xl transition-all active:scale-90 border border-transparent hover:border-slate-700" title="Reset All">
                     <i data-lucide="refresh-cw" class="w-5 h-5"></i>
                 </button>
-                <div class="h-6 w-px bg-slate-800 mx-1"></div>
-                <button id="renderBtn" disabled class="bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 disabled:text-slate-500 px-8 py-2.5 rounded-full font-bold transition-all active:scale-95 shadow-lg shadow-indigo-500/20 flex items-center gap-2">
-                    <i data-lucide="play" class="w-4 h-4"></i> 1. Render
+                <div class="h-8 w-px bg-slate-800 mx-2"></div>
+                <button id="renderBtn" disabled class="bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 disabled:text-slate-500 px-10 py-3.5 rounded-2xl font-black transition-all active:scale-95 shadow-2xl shadow-indigo-500/30 flex items-center gap-3 text-sm uppercase tracking-wider">
+                    <i data-lucide="play-circle" class="w-5 h-5"></i> 1. Render MP4
                 </button>
-                <button id="saveBtn" disabled class="bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-800 disabled:text-slate-500 px-8 py-2.5 rounded-full font-bold transition-all active:scale-95 shadow-lg shadow-emerald-500/20 flex items-center gap-2">
-                    <i data-lucide="download" class="w-4 h-4"></i> 2. Save File
+                <button id="saveBtn" disabled class="bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-800 disabled:text-slate-500 px-10 py-3.5 rounded-2xl font-black transition-all active:scale-95 shadow-2xl shadow-emerald-500/30 flex items-center gap-3 text-sm uppercase tracking-wider">
+                    <i data-lucide="download" class="w-5 h-5"></i> 2. Save File
                 </button>
             </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-12 gap-10">
+    <main class="max-w-[1600px] mx-auto px-8 py-12 grid grid-cols-1 lg:grid-cols-12 gap-12">
         <!-- Sidebar Controls -->
         <div class="lg:col-span-4 space-y-8">
-            <section class="bg-slate-900/40 border border-slate-800 rounded-[2rem] p-8 space-y-8 shadow-xl">
+            <section class="glass-panel rounded-[2.5rem] p-10 space-y-10 shadow-2xl">
                 <div class="flex items-center justify-between">
-                    <h2 class="text-xs font-bold uppercase tracking-[0.2em] text-slate-500 flex items-center gap-2">
-                        <i data-lucide="settings" class="w-4 h-4"></i> Configuration
+                    <h2 class="text-xs font-black uppercase tracking-[0.3em] text-slate-500 flex items-center gap-3">
+                        <i data-lucide="sliders" class="w-4 h-4 text-indigo-500"></i> Studio Config
                     </h2>
-                    <div class="flex bg-slate-800 p-1 rounded-xl" id="modeSelector">
-                        <button data-mode="video-image" class="px-5 py-2 text-[11px] font-bold rounded-lg transition-all bg-indigo-600 text-white shadow-sm">V+I</button>
-                        <button data-mode="dual-video" class="px-5 py-2 text-[11px] font-bold rounded-lg transition-all text-slate-400 hover:text-slate-200">V+V</button>
+                    <div class="flex bg-slate-950/50 p-1.5 rounded-2xl border border-slate-800" id="modeSelector">
+                        <button data-mode="video-image" class="px-6 py-2.5 text-[11px] font-black rounded-xl transition-all bg-indigo-600 text-white shadow-xl">V + I</button>
+                        <button data-mode="dual-video" class="px-6 py-2.5 text-[11px] font-black rounded-xl transition-all text-slate-500 hover:text-slate-200">V + V</button>
                     </div>
                 </div>
 
-                <div class="space-y-6">
+                <div class="space-y-8">
                     <!-- Video 1 -->
                     <div class="group">
-                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-3" id="labelV1">Video Source (30s)</label>
-                        <div class="relative border-2 border-dashed border-slate-700 group-hover:border-indigo-500/50 bg-slate-800/20 rounded-2xl transition-all overflow-hidden">
+                        <label class="block text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4" id="labelV1">Primary Video (30s)</label>
+                        <div class="relative border-2 border-dashed border-slate-700 group-hover:border-indigo-500/50 bg-slate-900/40 rounded-3xl transition-all overflow-hidden group-hover:bg-indigo-500/5">
                             <input type="file" id="inputV1" accept="video/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
-                            <div class="p-6 flex flex-col items-center text-center gap-3 relative z-10" id="infoV1">
-                                <div class="w-12 h-12 bg-slate-800 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-                                    <i data-lucide="video" class="w-6 h-6 text-indigo-400"></i>
+                            <div class="p-8 flex flex-col items-center text-center gap-4 relative z-10" id="infoV1">
+                                <div class="w-14 h-14 bg-slate-800/80 rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:bg-indigo-600 transition-all shadow-xl">
+                                    <i data-lucide="video" class="w-7 h-7 text-indigo-400 group-hover:text-white"></i>
                                 </div>
-                                <span class="text-xs font-medium text-slate-500">Click or drag video</span>
+                                <span class="text-xs font-bold text-slate-500 group-hover:text-indigo-300">Select Main Video</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Video 2 (Dual Mode Only) -->
                     <div class="group hidden" id="containerV2">
-                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-3">Video 2 (15s)</label>
-                        <div class="relative border-2 border-dashed border-slate-700 group-hover:border-indigo-500/50 bg-slate-800/20 rounded-2xl transition-all overflow-hidden">
+                        <label class="block text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Secondary Video (15s)</label>
+                        <div class="relative border-2 border-dashed border-slate-700 group-hover:border-indigo-500/50 bg-slate-900/40 rounded-3xl transition-all overflow-hidden group-hover:bg-indigo-500/5">
                             <input type="file" id="inputV2" accept="video/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
-                            <div class="p-6 flex flex-col items-center text-center gap-3 relative z-10" id="infoV2">
-                                <div class="w-12 h-12 bg-slate-800 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-                                    <i data-lucide="video" class="w-6 h-6 text-indigo-400"></i>
+                            <div class="p-8 flex flex-col items-center text-center gap-4 relative z-10" id="infoV2">
+                                <div class="w-14 h-14 bg-slate-800/80 rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:bg-indigo-600 transition-all shadow-xl">
+                                    <i data-lucide="video" class="w-7 h-7 text-indigo-400 group-hover:text-white"></i>
                                 </div>
-                                <span class="text-xs font-medium text-slate-500">Click or drag video 2</span>
+                                <span class="text-xs font-bold text-slate-500 group-hover:text-indigo-300">Select Second Video</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Image Overlay -->
                     <div class="group">
-                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-3">Overlay Image (PNG)</label>
-                        <div class="relative border-2 border-dashed border-slate-700 group-hover:border-emerald-500/50 bg-slate-800/20 rounded-2xl transition-all overflow-hidden">
+                        <label class="block text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Master Overlay (PNG)</label>
+                        <div class="relative border-2 border-dashed border-slate-700 group-hover:border-emerald-500/50 bg-slate-900/40 rounded-3xl transition-all overflow-hidden group-hover:bg-emerald-500/5">
                             <input type="file" id="inputImg" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
-                            <div class="p-6 flex flex-col items-center text-center gap-3 relative z-10" id="infoImg">
-                                <div class="w-12 h-12 bg-slate-800 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-                                    <i data-lucide="image" class="w-6 h-6 text-emerald-400"></i>
+                            <div class="p-8 flex flex-col items-center text-center gap-4 relative z-10" id="infoImg">
+                                <div class="w-14 h-14 bg-slate-800/80 rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:bg-emerald-600 transition-all shadow-xl">
+                                    <i data-lucide="image" class="w-7 h-7 text-emerald-400 group-hover:text-white"></i>
                                 </div>
-                                <span class="text-xs font-medium text-slate-500">Click or drag image</span>
+                                <span class="text-xs font-bold text-slate-500 group-hover:text-emerald-300">Select Overlay Image</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="pt-6 border-t border-slate-800">
-                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-3">Output Filename</label>
-                    <div class="relative">
-                        <input type="text" id="filenameInput" value="outdoor_ad_master" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-5 py-3 text-sm font-mono focus:ring-2 focus:ring-indigo-500/50 outline-none transition-all">
-                        <span class="absolute right-5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-500">.WEBM</span>
+                <div class="pt-8 border-t border-slate-800">
+                    <label class="block text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Output Filename</label>
+                    <div class="relative group">
+                        <input type="text" id="filenameInput" value="outdoor_ad_master" class="w-full bg-slate-950/50 border border-slate-800 rounded-2xl px-6 py-4 text-sm font-mono focus:ring-2 focus:ring-indigo-500/50 outline-none transition-all group-hover:border-slate-700 text-indigo-100">
+                        <span class="absolute right-6 top-1/2 -translate-y-1/2 text-[10px] font-black text-indigo-500 bg-indigo-500/10 px-2 py-1 rounded-md">.MP4</span>
                     </div>
                 </div>
             </section>
-
-            <div class="p-6 bg-indigo-500/5 border border-indigo-500/10 rounded-2xl flex gap-4">
-                <i data-lucide="info" class="w-5 h-5 text-indigo-400 shrink-0"></i>
-                <p class="text-[11px] text-slate-400 leading-relaxed">
-                    <strong class="text-indigo-300">Tip:</strong> 렌더링된 영상은 고화질 원본 소스인 .webm 파일로 저장됩니다. 크롬 브라우저나 VLC 플레이어에서 바로 확인 가능하며, 프리미어 등 편집 툴에서 MP4로 변환하기 가장 좋은 무손실급 포맷입니다.
-                </p>
-            </div>
         </div>
 
         <!-- Main Preview Area -->
-        <div class="lg:col-span-8 space-y-8">
-            <div class="bg-slate-900 border border-slate-800 rounded-[3rem] overflow-hidden canvas-container">
-                <div class="px-8 py-6 border-b border-slate-800 flex items-center justify-between bg-slate-900/50 backdrop-blur-sm">
-                    <div class="flex items-center gap-3">
-                        <div class="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.8)]"></div>
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Live Master Preview</span>
+        <div class="lg:col-span-8 space-y-10">
+            <div class="bg-slate-950 border border-slate-800 rounded-[3.5rem] overflow-hidden canvas-container relative">
+                <div class="px-10 py-8 border-b border-slate-800/60 flex items-center justify-between bg-slate-900/20 backdrop-blur-md">
+                    <div class="flex items-center gap-4">
+                        <div class="flex gap-1.5">
+                            <div class="w-3 h-3 rounded-full bg-red-500/20 flex items-center justify-center">
+                                <div class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></div>
+                            </div>
+                        </div>
+                        <span class="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em]">Master Output Preview</span>
                     </div>
-                    <button id="playBtn" disabled class="w-12 h-12 flex items-center justify-center rounded-full bg-slate-800 hover:bg-slate-700 text-white transition-all active:scale-90 shadow-lg">
-                        <i data-lucide="play" class="w-6 h-6 ml-1"></i>
+                    <button id="playBtn" disabled class="w-14 h-14 flex items-center justify-center rounded-full bg-indigo-600 hover:bg-indigo-500 text-white transition-all active:scale-90 shadow-2xl shadow-indigo-500/40">
+                        <i data-lucide="play" class="w-7 h-7 ml-1"></i>
                     </button>
                 </div>
 
-                <div class="bg-black aspect-[3072/1152] relative group">
+                <div class="bg-black aspect-[3072/1152] relative overflow-hidden">
                     <canvas id="mainCanvas" width="3072" height="1152" class="w-full h-full object-contain"></canvas>
-                    <div class="absolute inset-0 border-4 border-indigo-500/0 group-hover:border-indigo-500/10 transition-all pointer-events-none"></div>
+                    <div class="absolute top-6 left-6 px-4 py-2 bg-black/60 backdrop-blur-md rounded-xl border border-white/10 text-[10px] font-mono text-white/50 pointer-events-none">
+                        3072 x 1152 Master Canvas
+                    </div>
                 </div>
 
-                <div class="p-10 bg-slate-900/80">
-                    <div class="flex justify-between items-end mb-4">
-                        <div class="space-y-1">
-                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Timeline Status</span>
-                            <div class="text-2xl font-mono font-bold text-indigo-400" id="timeDisplay">00:00 <span class="text-slate-600 text-sm">/ 00:30</span></div>
+                <div class="p-12 bg-gradient-to-b from-slate-900/50 to-slate-950">
+                    <div class="flex justify-between items-end mb-6">
+                        <div class="space-y-2">
+                            <span class="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Timeline Progress</span>
+                            <div class="text-4xl font-mono font-bold text-white tracking-tighter" id="timeDisplay">00:00 <span class="text-slate-700 text-xl font-medium">/ 00:30</span></div>
                         </div>
-                        <div class="text-right">
-                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Resolution</span>
-                            <div class="text-sm font-mono text-slate-400">3072 x 1152 px</div>
+                        <div class="text-right space-y-1">
+                            <span class="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Status</span>
+                            <div class="text-sm font-bold text-emerald-400 flex items-center gap-2 justify-end">
+                                <div class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></div>
+                                Ready for Master
+                            </div>
                         </div>
                     </div>
-                    <div class="h-2.5 w-full bg-slate-800 rounded-full overflow-hidden border border-slate-700/50">
-                        <div id="progressBar" class="h-full bg-indigo-500 w-0 transition-all duration-100 shadow-[0_0_10px_rgba(99,102,241,0.4)]"></div>
+                    <div class="h-3 w-full bg-slate-800/50 rounded-full overflow-hidden border border-slate-700/30 p-0.5">
+                        <div id="progressBar" class="h-full bg-gradient-to-r from-indigo-600 to-violet-500 w-0 rounded-full transition-all duration-100 shadow-[0_0_15px_rgba(99,102,241,0.5)]"></div>
                     </div>
                 </div>
             </div>
 
             <!-- Specs Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="p-6 bg-slate-900/30 border border-slate-800 rounded-3xl">
-                    <div class="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center mb-4">
-                        <i data-lucide="maximize" class="w-4 h-4 text-slate-400"></i>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="p-8 glass-panel rounded-[2rem] hover:border-indigo-500/30 transition-all group">
+                    <div class="w-12 h-12 bg-slate-800 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-indigo-600 transition-all">
+                        <i data-lucide="maximize" class="w-6 h-6 text-slate-400 group-hover:text-white"></i>
                     </div>
-                    <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Aspect Ratio</h4>
-                    <p class="text-[11px] text-slate-500 leading-relaxed">8:3 울트라 와이드 비율로 야외 전광판 및 대형 LED 스크린에 최적화되어 있습니다.</p>
+                    <h4 class="text-xs font-black text-white uppercase tracking-widest mb-3">8:3 Ultra-Wide</h4>
+                    <p class="text-xs text-slate-500 leading-relaxed font-medium">야외 전광판 및 초대형 LED 스크린 규격에 맞춘 전문적인 화면 비율입니다.</p>
                 </div>
-                <div class="p-6 bg-slate-900/30 border border-slate-800 rounded-3xl">
-                    <div class="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center mb-4">
-                        <i data-lucide="zap" class="w-4 h-4 text-slate-400"></i>
+                <div class="p-8 glass-panel rounded-[2rem] hover:border-indigo-500/30 transition-all group">
+                    <div class="w-12 h-12 bg-slate-800 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-indigo-600 transition-all">
+                        <i data-lucide="zap" class="w-6 h-6 text-slate-400 group-hover:text-white"></i>
                     </div>
-                    <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">High Fidelity</h4>
-                    <p class="text-[11px] text-slate-500 leading-relaxed">3K 해상도 출력을 통해 대형 화면에서도 픽셀 깨짐 없는 선명한 화질을 보장합니다.</p>
+                    <h4 class="text-xs font-black text-white uppercase tracking-widest mb-3">3K High-Fidelity</h4>
+                    <p class="text-xs text-slate-500 leading-relaxed font-medium">3072px 가로 해상도로 대형 화면에서도 픽셀 깨짐 없는 선명함을 제공합니다.</p>
                 </div>
-                <div class="p-6 bg-slate-900/30 border border-slate-800 rounded-3xl">
-                    <div class="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center mb-4">
-                        <i data-lucide="clock" class="w-4 h-4 text-slate-400"></i>
+                <div class="p-8 glass-panel rounded-[2rem] hover:border-indigo-500/30 transition-all group">
+                    <div class="w-12 h-12 bg-slate-800 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-indigo-600 transition-all">
+                        <i data-lucide="clock" class="w-6 h-6 text-slate-400 group-hover:text-white"></i>
                     </div>
-                    <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Standard 30s</h4>
-                    <p class="text-[11px] text-slate-500 leading-relaxed">디지털 사이니지 광고 표준인 30초 길이에 맞춰 정확하게 렌더링됩니다.</p>
+                    <h4 class="text-xs font-black text-white uppercase tracking-widest mb-3">Standard 30s</h4>
+                    <p class="text-xs text-slate-500 leading-relaxed font-medium">광고 송출 표준인 30초 길이를 정확하게 준수하여 렌더링합니다.</p>
                 </div>
             </div>
         </div>
@@ -286,7 +291,7 @@
                 
                 const p = Math.min((curr / TARGET_DURATION) * 100, 100);
                 el.progressBar.style.width = `${p}%`;
-                el.timeDisplay.innerHTML = `00:${Math.floor(curr).toString().padStart(2, '0')} <span class="text-slate-600 text-sm">/ 00:30</span>`;
+                el.timeDisplay.innerHTML = `00:${Math.floor(curr).toString().padStart(2, '0')} <span class="text-slate-700 text-xl font-medium">/ 00:30</span>`;
                 
                 if (state.isExporting) {
                     el.renderBar.style.width = `${p}%`;
@@ -301,11 +306,11 @@
         el.modeBtns.forEach(btn => {
             btn.onclick = () => {
                 state.mode = btn.dataset.mode;
-                el.modeBtns.forEach(b => b.classList.replace('bg-indigo-600', 'text-slate-400'));
-                btn.classList.replace('text-slate-400', 'bg-indigo-600');
+                el.modeBtns.forEach(b => b.classList.replace('bg-indigo-600', 'text-slate-500'));
+                btn.classList.replace('text-slate-500', 'bg-indigo-600');
                 btn.classList.add('text-white');
                 el.containerV2.classList.toggle('hidden', state.mode !== 'dual-video');
-                el.labelV1.innerText = state.mode === 'dual-video' ? 'Video 1 (0-15s)' : 'Video Source (30s)';
+                el.labelV1.innerText = state.mode === 'dual-video' ? 'Video 1 (0-15s)' : 'Primary Video (30s)';
                 checkReady();
             };
         });
@@ -316,7 +321,8 @@
             if (!file) return;
             state.video1Loaded = true;
             el.v1.src = URL.createObjectURL(file);
-            el.infoV1.innerHTML = `<span class="text-xs text-indigo-300 font-mono">${file.name}</span>`;
+            el.infoV1.innerHTML = `<div class="flex flex-col items-center gap-2"><i data-lucide="check-circle-2" class="w-8 h-8 text-indigo-400"></i><span class="text-[10px] text-indigo-300 font-mono font-bold truncate max-w-[150px]">${file.name}</span></div>`;
+            lucide.createIcons();
             checkReady();
         };
         document.getElementById('inputV2').onchange = (e) => {
@@ -324,7 +330,8 @@
             if (!file) return;
             state.video2Loaded = true;
             el.v2.src = URL.createObjectURL(file);
-            el.infoV2.innerHTML = `<span class="text-xs text-indigo-300 font-mono">${file.name}</span>`;
+            el.infoV2.innerHTML = `<div class="flex flex-col items-center gap-2"><i data-lucide="check-circle-2" class="w-8 h-8 text-indigo-400"></i><span class="text-[10px] text-indigo-300 font-mono font-bold truncate max-w-[150px]">${file.name}</span></div>`;
+            lucide.createIcons();
             checkReady();
         };
         document.getElementById('inputImg').onchange = (e) => {
@@ -332,7 +339,8 @@
             if (!file) return;
             state.imageLoaded = true;
             el.img.src = URL.createObjectURL(file);
-            el.infoImg.innerHTML = `<span class="text-xs text-emerald-300 font-mono">${file.name}</span>`;
+            el.infoImg.innerHTML = `<div class="flex flex-col items-center gap-2"><i data-lucide="check-circle-2" class="w-8 h-8 text-emerald-400"></i><span class="text-[10px] text-emerald-300 font-mono font-bold truncate max-w-[150px]">${file.name}</span></div>`;
+            lucide.createIcons();
             checkReady();
         };
 
@@ -351,11 +359,11 @@
             } else {
                 el.v1.pause(); el.v2.pause();
             }
-            el.playBtn.innerHTML = `<i data-lucide="${state.isPlaying ? 'pause' : 'play'}" class="w-6 h-6 ${state.isPlaying ? '' : 'ml-1'}"></i>`;
+            el.playBtn.innerHTML = `<i data-lucide="${state.isPlaying ? 'pause' : 'play'}" class="w-7 h-7 ${state.isPlaying ? '' : 'ml-1'}"></i>`;
             lucide.createIcons();
         };
 
-        // STABLE RENDER ENGINE
+        // STABLE MP4 RENDER ENGINE
         el.renderBtn.onclick = async () => {
             try {
                 state.isExporting = true;
@@ -363,7 +371,7 @@
                 el.overlay.classList.remove('hidden');
                 el.renderBtn.disabled = true;
                 el.saveBtn.disabled = true;
-                el.statusText.innerText = "Initializing Audio Engine...";
+                el.statusText.innerText = "Initializing Professional Audio Engine...";
 
                 // 1. Audio Setup
                 if (!state.audioCtx) {
@@ -378,14 +386,25 @@
                 }
                 await state.audioCtx.resume();
 
-                // 2. Recorder Setup
+                // 2. Recorder Setup (Try MP4 first, fallback to WebM)
                 const stream = el.canvas.captureStream(30);
                 stream.addTrack(state.dest.stream.getAudioTracks()[0]);
                 
-                state.mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus') ? 'video/webm;codecs=vp9,opus' : 'video/webm';
+                // MP4 지원 여부 확인 및 설정
+                const preferredTypes = [
+                    'video/mp4;codecs=avc1,aac',
+                    'video/mp4;codecs=avc1',
+                    'video/mp4',
+                    'video/webm;codecs=h264,opus', // H.264 in WebM is highly compatible
+                    'video/webm'
+                ];
+
+                state.mimeType = preferredTypes.find(type => MediaRecorder.isTypeSupported(type)) || 'video/webm';
+                console.log("Selected MIME Type:", state.mimeType);
+
                 state.recorder = new MediaRecorder(stream, { 
                     mimeType: state.mimeType, 
-                    videoBitsPerSecond: 10000000 
+                    videoBitsPerSecond: 12000000 
                 });
 
                 state.recorder.ondataavailable = (e) => { if (e.data.size > 0) state.chunks.push(e.data); };
@@ -396,7 +415,7 @@
                     el.overlay.classList.add('hidden');
                     el.saveBtn.disabled = false;
                     el.renderBtn.disabled = false;
-                    el.statusText.innerText = "Master Ready!";
+                    el.statusText.innerText = "MP4 Master Ready!";
                 };
 
                 // 3. SYNC & START
@@ -407,7 +426,7 @@
                 el.v2.volume = 1.0;
                 
                 renderFrame();
-                el.statusText.innerText = "Capturing 30s Master...";
+                el.statusText.innerText = "Capturing 30s Master Stream...";
                 
                 // Start recorder with timeslice for stability
                 state.recorder.start(1000); 
@@ -426,14 +445,14 @@
                         if (elapsed >= 15 && !el.v1.paused) {
                             el.v1.pause();
                             el.v2.play();
-                            el.statusText.innerText = "Switching Audio/Video Source...";
+                            el.statusText.innerText = "Seamlessly Switching Source...";
                         }
                     }
 
                     if (elapsed >= 30.5) { // Safety margin
                         clearInterval(monitor);
                         el.v1.pause(); el.v2.pause();
-                        el.statusText.innerText = "Finalizing File Structure...";
+                        el.statusText.innerText = "Finalizing MP4 Container...";
                         setTimeout(() => state.recorder.stop(), 1000);
                     }
                 }, 16);
@@ -450,7 +469,8 @@
             if (!state.exportUrl) return;
             const a = document.createElement('a');
             a.href = state.exportUrl;
-            a.download = el.filename.value + ".webm";
+            // 확장자를 무조건 .mp4로 지정하여 다운로드
+            a.download = el.filename.value + ".mp4";
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
